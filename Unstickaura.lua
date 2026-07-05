@@ -11,7 +11,7 @@ Sect.AdvancedSection:AddDropdown({
 	Name = "Unstick Aura Radius",
 	Options = { "12", "14", "16", "18", "20"},
 	Multi = false,
-	Default = "",
+	Default = "20",
 	MaxSize = 5,
 	Search = false,
 	Flag = "AntiKickAuraRadius",
