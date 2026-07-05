@@ -12,21 +12,7 @@ local SpawnRemote = MenuToys:WaitForChild("SpawnToyRemoteFunction")
 local DestroyRemote = MenuToys:WaitForChild("DestroyToy")
 
 local lp = game.Players.LocalPlayer
-local Grass = nil
-
-local oceanFolder = workspace:FindFirstChild("Map", true)
-if oceanFolder then
-    oceanFolder = oceanFolder:FindFirstChild("AlwaysHereTweenedObjects", true)
-    if oceanFolder then
-        oceanFolder = oceanFolder:FindFirstChild("Ocean", true)
-        if oceanFolder then
-            local model = oceanFolder:FindFirstChild("ObjectModel")
-            if model then
-                Grass = model:FindFirstChildWhichIsA("BasePart")
-            end
-        end
-    end
-end
+local Grass = workspace.Map.AlwaysHereTweenedObjects.Ocean.Object.ObjectModel:GetChildren()[14]
 
 Sect.FunLineSection:AddToggle({
     Name = "Break Ocean",
