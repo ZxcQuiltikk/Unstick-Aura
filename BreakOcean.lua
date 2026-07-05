@@ -7,6 +7,9 @@ local STRF = menutoys:WaitForChild("SpawnToyRemoteFunction")
 local PlayerEvents = rs:WaitForChild("PlayerEvents")
 local SPE = PlayerEvents:WaitForChild("StickyPartEvent")
 
+local Tabs = getgenv().UI.Tabs
+local Sect = getgenv().UI.Sect
+
 local Grass = workspace.Map.AlwaysHereTweenedObjects.Ocean.Object.ObjectModel:GetChildren()[14]
 local breakOceanEnabled = false
 
