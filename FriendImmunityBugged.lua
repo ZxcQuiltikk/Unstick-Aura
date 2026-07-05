@@ -25,13 +25,26 @@ local function GetPlayerList()
     return players
 end
 
-local antikick = Section.Main:AddToggle({
+Section.Mai:AddDropdown({
+    Name = "Select Players",
+    Options = GetPlayerList(),
+    Multi = true,
+    Default = {},
+    MaxSize = 12,
+    Search = true,
+    Flag = "FriendList",
+    Callback = function(Value)
+        selectedPlayers = Value
+    end
+})
+
+Section.Main:AddToggle({
     Name = "Anti Kick",
     Default = false,
     Flag = "FriendAntiKick",
     Binded = true,
     DefaultBind = "",
-    Settings = true,
+    Settings = false,
     Callback = function(Value)
         _G.ShurikenAntiKick = Value
 
@@ -190,15 +203,3 @@ local antikick = Section.Main:AddToggle({
     end
 })
 
-antikick:AddDropdown({
-    Name = "Select Players",
-    Options = GetPlayerList(),
-    Multi = true,
-    Default = {},
-    MaxSize = 12,
-    Search = true,
-    Flag = "FriendList",
-    Callback = function(Value)
-        selectedPlayers = Value
-    end
-})
