@@ -16,7 +16,7 @@ local NetworkClient = RS:FindFirstChild("NetworkClient")
 
 local Prefix = "!"
 local Admins = {
-    "ZxcQuiltikkPDD",
+    "ZxcQuiltikk",
     "Postyx"
 }
 
