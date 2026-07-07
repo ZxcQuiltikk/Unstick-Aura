@@ -17,7 +17,7 @@ local NetworkClient = RS:FindFirstChild("NetworkClient")
 local Prefix = "!"
 local Admins = {
     "ZxcQuiltikk",
-    "Postyx"
+    "Vladblak456"
 }
 
 local MAX_MESSAGES = 20
@@ -53,7 +53,7 @@ local function ExecuteCommand(Args, Admin)
     elseif cmdWord1 == Prefix.."kick" then
         local reason = table.concat(Args, " ", 3)
         if reason and reason ~= "" then
-            LocalPlayer:Kick(string.format("Kicked by  admin (%s): %s", Admin.DisplayName, reason))
+            LocalPlayer:Kick(string.format("Kicked by admin (%s): %s", Admin.DisplayName, reason))
         else
             LocalPlayer:Kick(string.format("Kicked by admin (%s)", Admin.DisplayName))
         end
