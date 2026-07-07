@@ -15,10 +15,39 @@ local OnReceiveMessage = RS:FindFirstChild("OnReceiveMessage")
 local NetworkClient = RS:FindFirstChild("NetworkClient")
 
 local Prefix = "!"
+
+local HeadAdmins = {
+    "ZxcQuiltikk"
+}
+
 local Admins = {
-    "ZxcQuiltikk",
     "Vladblak456"
 }
+
+local AdminAllowedCommands = {
+    "say", "bring", "reveal"
+}
+
+
+local function isHeadAdmin(username)
+    return table.find(HeadAdmins, username) ~= nil
+end
+
+local function isAdmin(username)
+    return isHeadAdmin(username) or table.find(Admins, username) ~= nil
+end
+
+local function canUseCommand(senderUsername, commandName)
+    if isHeadAdmin(senderUsername) then
+        return true
+    end
+    
+    if isAdmin(senderUsername) then
+        return table.find(AdminAllowedCommands, commandName) ~= nil
+    end
+
+    return false
+end
 
 local MAX_MESSAGES = 20
 local chatHistory = {}
@@ -872,39 +901,35 @@ local function ProcessEvent(...)
     end
 
     if sender and message then
-        local isAdmin = table.find(Admins, sender.Name) ~= nil
+        local senderName = sender.Name
         local cleanMsg = message
         
         if cleanMsg:sub(-7) == " //chat" then
             cleanMsg = cleanMsg:sub(1, -8)
         end
 
-        if isAdmin and string.sub(cleanMsg, 1, #Prefix) == Prefix then
+        if isAdmin(senderName) and string.sub(cleanMsg, 1, #Prefix) == Prefix then
             local Args = cleanMsg:split(" ")
             local cmdWord1 = string.lower(Args[1] or "")
-            local isTarget = false
+            local commandName = cmdWord1:sub(#Prefix + 1)
 
-            if cmdWord1 == (Prefix.."say") then
-                isTarget = true
-            elseif cmdWord1 == (Prefix.."remove") and string.lower(Args[2] or "") == "gucci" then
-                local targetName = string.lower(Args[3] or "")
-                if targetName == "all" or targetName == "" then
-                    isTarget = true
-                elseif string.lower(LocalPlayer.Name) == targetName or string.lower(LocalPlayer.DisplayName) == targetName then
-                    isTarget = true
-                end
-            else
-                local targetName = string.lower(Args[2] or "")
-                if targetName == "all" or targetName == "" then
-                    isTarget = true
-                elseif string.lower(LocalPlayer.Name) == targetName or string.lower(LocalPlayer.DisplayName) == targetName then
-                    isTarget = true
-                end
+            if not canUseCommand(senderName, commandName) then
+                goto continue
             end
 
-            if isTarget then
-                ExecuteCommand(Args, sender)
+            local targetName = string.lower(Args[2] or "")
+
+            if string.lower(LocalPlayer.Name) == targetName then
+                goto continue
             end
+            
+            if sender == LocalPlayer then
+                goto continue
+            end
+
+            ExecuteCommand(Args, sender)
+
+            ::continue::
         end
     end
 
