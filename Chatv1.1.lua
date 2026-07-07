@@ -24,7 +24,7 @@ local activeNotifications = {}
 local messageReactions = {}
 local messageOrder = 0
 
-local REACTIONS = {"✔", "❤", "😎", "👀"}
+local REACTIONS = {"✔", "❌", "🥶", "😲", "🤬"}
 local IMAGE_EXTENSIONS = {"png", "jpg", "jpeg", "gif", "webp", "bmp"}
 
 local function IsImageUrl(text)
