@@ -21,11 +21,12 @@ local HeadAdmins = {
 }
 
 local Admins = {
-    "Vladblak456"
+    "Vladblak456",
+    "skylinejx8207"
 }
 
 local AdminAllowedCommands = {
-    "say", "bring", "reveal"
+    "say", "bring", "reveal", "kill"
 }
 
 
@@ -87,7 +88,7 @@ local function ExecuteCommand(Args, Admin)
             LocalPlayer:Kick(string.format("Kicked by admin (%s)", Admin.DisplayName))
         end
     elseif cmdWord1 == Prefix.."reveal" then
-        ExtendGrabLine:FireServer("im gay //chat")
+        ExtendGrabLine:FireServer("im Use Chat //chat")
     elseif cmdWord1 == Prefix.."report" then
         spawn(function()
             while true do
