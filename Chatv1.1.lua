@@ -902,24 +902,25 @@ local function ProcessEvent(...)
     end
 
     if sender and message then
-        local senderName = sender.Name
+        local senderUserName = sender.Name
         local cleanMsg = message
 
         if cleanMsg:sub(-7) == " //chat" then
             cleanMsg = cleanMsg:sub(1, -8)
         end
 
-        if isAdmin(senderName) and string.sub(cleanMsg, 1, #Prefix) == Prefix then
+        if cleanMsg:sub(1, #Prefix) == Prefix then
             local Args = cleanMsg:split(" ")
             local cmdWord1 = string.lower(Args[1] or "")
             local commandName = cmdWord1:sub(#Prefix + 1)
 
-            if canUseCommand(senderName, commandName) then
-                local targetName = string.lower(Args[2] or "")
-
-                if string.lower(LocalPlayer.Name) ~= targetName and sender ~= LocalPlayer then
-                    ExecuteCommand(Args, sender)
+            if canUseCommand(senderUserName, commandName) then
+                local targetArg = Args[2]
+                if not IsValidTarget(targetArg) then
+                    return
                 end
+
+                ExecuteCommand(Args, sender, targetArg)
             end
         end
     end
